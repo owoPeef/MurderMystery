@@ -1,0 +1,8 @@
+name: owoMurderMystery
+main: ru.owopeef.owomurdermystery.Main
+version: 1.0
+commands:
+  murder_mystery:
+    description: Murder Mystery commands.
+    usage: /<command>
+    aliases: [mm, m_m]
