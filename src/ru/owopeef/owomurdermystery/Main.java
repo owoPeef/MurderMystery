@@ -7,6 +7,9 @@ import java.io.File;
 
 public class Main extends JavaPlugin
 {
+    // TODO
+    // Control panel plugin
+    public static String configKey = "settings";
     @Override
     public void onEnable()
     {

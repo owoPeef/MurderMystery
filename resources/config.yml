@@ -6,6 +6,39 @@
 # {murder_role} - Murder role                #
 # {role} - Player role                       #
 ##############################################
+settings:
+  murder_weapon: iron_sword
+  murder_weapon_slot: 1
+  detective_weapon_slot: 1
+  gold_slot: 8
+  join_message: "{donate_prefix}{nick} §ehas joined (§b{players_count}§e/§b{max_players}§e)!"
+  quit_message: "{donate_prefix}{nick} §ehas quit!"
+  death_title: "§cВы умерли!"
+  death_subtitle: "§e{murder_role} убил вас"
+  role_title: "§{role_color}РОЛЬ: {role}"
+  innocent_win_message: "§aПобеда Мирных жителей!"
+  murder_win_message: "§cПобеда Маньяка!"
+  roles:
+    murder: "Маньяк"
+    murder_eng: "Murder"
+    murder_color: "c"
+    murder_warning: "§c§lСоюз с Детективом/Мирными жителями не разрешён!"
+    murder_subtitle: "§eУбейте всех игроков!"
+    detective: "Детектив"
+    detective_eng: "Detective"
+    detective_color: "b"
+    detective_warning: "§c§lСоюз с Маньяком не разрешён!"
+    detective_subtitle: "§eНайдите и убейте Маньяка!"
+    innocent: "Мирный житель"
+    innocent_eng: "Innocent"
+    innocent_color: "a"
+    innocent_warning: "§c§lСоюз с Маньяком не разрешён!"
+    innocent_subtitle: "§eОставайтесь живым как можно дольше!"
+    ghost: "Призрак"
+    ghost_eng: "Ghost"
+    ghost_color: "7"
+    ghost_warning: ""
+    ghost_subtitle: ""
 maps:
   0:
     start_pos_x: 0.5
@@ -13,32 +46,3 @@ maps:
     start_pos_z: 0.5
     world_name: world
     max_players: 16
-    murder_weapon: iron_sword
-    roles:
-      murder: "Маньяк"
-      murder_eng: "Murder"
-      murder_color: "c"
-      murder_warning: "§c§lСоюз с Детективом/Мирными жителями не разрешён!"
-      murder_subtitle: "§eУбейте всех игроков!"
-      detective: "Детектив"
-      detective_eng: "Detective"
-      detective_color: "b"
-      detective_warning: "§c§lСоюз с Маньяком не разрешён!"
-      detective_subtitle: "§eНайдите и убейте Маньяка!"
-      innocent: "Мирный житель"
-      innocent_eng: "Innocent"
-      innocent_color: "a"
-      innocent_warning: "§c§lСоюз с Маньяком не разрешён!"
-      innocent_subtitle: "§eОставайтесь живым как можно дольше!"
-      ghost: "Призрак"
-      ghost_eng: "Ghost"
-      ghost_color: "7"
-      ghost_warning: ""
-      ghost_subtitle: ""
-    join_message: "{donate_prefix}{nick} §ehas joined (§b{players_count}§e/§b{max_players}§e)!"
-    quit_message: "{donate_prefix}{nick} §ehas quit!"
-    death_title: "§cВы умерли!"
-    death_subtitle: "§e{murder_role} убил вас"
-    role_title: "§{role_color}РОЛЬ: {role}"
-    innocent_win_message: "§aПобеда Мирных жителей!"
-    murder_win_message: "§cПобеда Маньяка!"

@@ -18,6 +18,7 @@ import java.util.Objects;
 public class MurderMysteryManager
 {
     static Plugin plugin = JavaPlugin.getPlugin(Main.class);
+    public static String configKey = Main.configKey;
     public static String murder, detective, innocents, ghosts = "";
     public static void startGame()
     {
@@ -44,13 +45,15 @@ public class MurderMysteryManager
                 {
                     plugin.getLogger().warning("Material not found!\n" + e.getMessage());
                 }
-                playerList.get(a).getInventory().setItem(2, new ItemStack(murderWeapon));
+                int murderSlot = Integer.parseInt(readConfig(configKey, "murder_weapon_slot"));
+                playerList.get(a).getInventory().setItem(murderSlot, new ItemStack(murderWeapon));
                 murder = playerList.get(a).getName();
             }
             if (a == detectiveRandom)
             {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
-                playerList.get(a).getInventory().setItem(2, new ItemStack(Item.getId(Item.getById(261))));
+                int detectiveSlot = Integer.parseInt(readConfig(configKey, "detective_weapon_slot"));
+                playerList.get(a).getInventory().setItem(detectiveSlot, new ItemStack(Item.getId(Item.getById(261))));
                 detective = playerList.get(a).getName();
             }
             if (a != murderRandom && a != detectiveRandom)
@@ -76,11 +79,11 @@ public class MurderMysteryManager
             {
                 playerRole = "murder";
             }
-            String roleColor = readConfig("maps", "0.roles." + playerRole + "_color");
-            String roleResult = readConfig("maps", "0.roles." + playerRole);
-            String roleTitle = readConfig("maps", "0.role_title").replace("{role_color}", roleColor).replace("{role}", roleResult);
-            String roleSubtitle = readConfig("maps", "0.roles." + playerRole + "_subtitle");
-            String roleWarning = readConfig("maps", "0.roles." + playerRole + "_warning");
+            String roleColor = readConfig(configKey, "roles." + playerRole + "_color");
+            String roleResult = readConfig(configKey, "roles." + playerRole);
+            String roleTitle = readConfig(configKey, "role_title").replace("{role_color}", roleColor).replace("{role}", roleResult);
+            String roleSubtitle = readConfig(configKey, "roles." + playerRole + "_subtitle");
+            String roleWarning = readConfig(configKey, "roles." + playerRole + "_warning");
             playerList.get(a).sendTitle(roleTitle, roleSubtitle);
             playerList.get(a).sendMessage(roleWarning);
             a++;
@@ -91,12 +94,12 @@ public class MurderMysteryManager
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         if (innocentsWin)
         {
-            String winInnocentMessage = readConfig("maps", "0.innocent_win_message");
+            String winInnocentMessage = readConfig(configKey, "innocent_win_message");
             plugin.getServer().broadcastMessage(winInnocentMessage);
         }
         else
         {
-            String winMurderMessage = readConfig("maps", "0.murder_win_message");
+            String winMurderMessage = readConfig(configKey, "murder_win_message");
             plugin.getServer().broadcastMessage(winMurderMessage);
         }
     }
@@ -138,8 +141,9 @@ public class MurderMysteryManager
         Player player = Bukkit.getPlayer(nick);
         player.setAllowFlight(true);
         player.setFlying(true);
-        String deathTitle = readConfig("maps", "0.death_title");
-        String deathSubTitle = readConfig("maps", "0.death_subtitle");
+        playSound(player, Sound.SUCCESSFUL_HIT);
+        String deathTitle = readConfig(configKey, "death_title");
+        String deathSubTitle = readConfig(configKey, "death_subtitle");
         player.sendTitle(deathTitle, deathSubTitle);
         PotionEffect pe = PotionEffectType.INVISIBILITY.createEffect(99999999, 10);
         player.addPotionEffect(pe);

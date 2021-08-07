@@ -25,6 +25,7 @@ public class PlayerEvents implements Listener
 {
     Plugin plugin = JavaPlugin.getPlugin(Main.class);
     String donatePrefix;
+    public String configKey = Main.configKey;
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
@@ -38,7 +39,7 @@ public class PlayerEvents implements Listener
         String worldName = readConfig("maps", "0.world_name");
         int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size() + 1;
         int maxPlayers = Integer.parseInt(readConfig("maps", "0.max_players"));
-        String joinMessage = readConfig("maps", "0.join_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
+        String joinMessage = readConfig(configKey, "join_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
         event.getPlayer().teleport(new Location(event.getPlayer().getWorld(), startPosX, startPosY, startPosZ));
         player.setPlayerListName(donatePrefix + player.getName());
         event.setJoinMessage(joinMessage);
@@ -53,7 +54,7 @@ public class PlayerEvents implements Listener
         String worldName = readConfig("maps", "0.world_name");
         int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
         int maxPlayers = Integer.parseInt(readConfig("maps", "0.max_players"));
-        String quitMessage = readConfig("maps", "0.quit_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
+        String quitMessage = readConfig(configKey, "quit_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
         event.setQuitMessage(quitMessage);
     }
     @EventHandler
@@ -100,7 +101,6 @@ public class PlayerEvents implements Listener
             }
             if (damageEntityHandItem == Material.BOW)
             {
-                plugin.getLogger().info("BOW MATERIAL");
                 Arrow arrow = (Arrow) event.getDamager();
                 Player shooter = (Player) arrow.getShooter();
                 int role = MurderMysteryManager.getRole(String.valueOf(shooter));
@@ -149,7 +149,6 @@ public class PlayerEvents implements Listener
             event.getItem().remove();
             Player player = event.getPlayer();
             player.getInventory().setItem(0, new ItemStack(266));
-            plugin.getServer().getLogger().info("Pickup gold ingot");
         }
     }
     public String readConfig(String path, String parent)
