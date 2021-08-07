@@ -7,8 +7,6 @@ import java.io.File;
 
 public class Main extends JavaPlugin
 {
-    // TODO
-    // Control panel plugin
     @Override
     public void onEnable()
     {
