@@ -39,7 +39,7 @@ public class MurderMysteryManager
                 Material murderWeapon = Material.IRON_SWORD;
                 try
                 {
-                    murderWeapon = Material.getMaterial(readConfig("maps", "0.murder_weapon").toUpperCase());
+                    murderWeapon = Material.getMaterial(readConfig(configKey, "murder_weapon").toUpperCase());
                 }
                 catch (Exception e)
                 {
