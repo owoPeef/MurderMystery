@@ -62,29 +62,16 @@ public class MurderMysteryManager
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
                 innocents += playerList.get(a).getName() + ",";
             }
-            int playerRoleInt = getRole(playerList.get(a).getName());
-            String playerRole = "";
-            if (playerRoleInt == 0)
-            {
-                playerRole = "ghost";
-            }
-            if (playerRoleInt == 1)
-            {
-                playerRole = "innocent";
-            }
-            if (playerRoleInt == 2)
-            {
-                playerRole = "detective";
-            }
-            if (playerRoleInt == 3)
-            {
-                playerRole = "murder";
-            }
+            String playerRole = getRoleString(playerList.get(a).getName());
+            String worldName = Config.readConfig("maps", "0", "world_name");
+            int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
+            int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
+            String murderRole = Config.readConfig(configKey, "roles", "murder");
             String roleColor = Config.readConfig(configKey, "roles", playerRole + "_color");
             String roleResult = Config.readConfig(configKey, "roles", playerRole);
-            String roleTitle = Config.readConfig(configKey, "role_title").replace("{role_color}", roleColor).replace("{role}", roleResult);
-            String roleSubtitle = Config.readConfig(configKey, "roles", playerRole + "_subtitle");
-            String roleWarning = Config.readConfig(configKey, "roles", playerRole + "_warning");
+            String roleTitle = Config.readConfig(configKey, "role_title").replace("&", "§").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
+            String roleSubtitle = Config.readConfig(configKey, "roles", playerRole + "_subtitle").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
+            String roleWarning = Config.readConfig(configKey, "roles", playerRole + "_warning").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
             playerList.get(a).sendTitle(roleTitle, roleSubtitle);
             playerList.get(a).sendMessage(roleWarning);
             a++;
@@ -133,6 +120,28 @@ public class MurderMysteryManager
             return 3;
         }
         return 0;
+    }
+    public static String getRoleString(String nick)
+    {
+        Player player = Bukkit.getPlayer(nick);
+        int playerRoleInt = getRole(player.getName());
+        if (playerRoleInt == 0)
+        {
+            return "ghost";
+        }
+        if (playerRoleInt == 1)
+        {
+            return "innocent";
+        }
+        if (playerRoleInt == 2)
+        {
+            return "detective";
+        }
+        if (playerRoleInt == 3)
+        {
+            return "murder";
+        }
+        return "";
     }
     public static void playerDeath(String nick)
     {

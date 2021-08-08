@@ -40,7 +40,11 @@ public class PlayerEvents implements Listener
         String worldName = Config.readConfig("maps", "0", "world_name");
         int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size() + 1;
         int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
-        String joinMessage = Config.readConfig(configKey, "join_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
+        String murderRole = Config.readConfig(configKey, "roles", "murder");
+        String playerRole = MurderMysteryManager.getRoleString(player.getName());
+        String roleColor = Config.readConfig(configKey, "roles", playerRole + "_color");
+        String roleResult = Config.readConfig(configKey, "roles", playerRole);
+        String joinMessage = Config.readConfig(configKey, "join_message").replace("&", "§").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", player.getName()).replace("{role_color}", roleColor);
         event.getPlayer().teleport(new Location(event.getPlayer().getWorld(), startPosX, startPosY, startPosZ));
         player.setPlayerListName(donatePrefix + player.getName());
         event.setJoinMessage(joinMessage);
@@ -55,7 +59,11 @@ public class PlayerEvents implements Listener
         String worldName = Config.readConfig("maps", "0", "world_name");
         int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
         int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
-        String quitMessage = Config.readConfig(configKey, "quit_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
+        String murderRole = Config.readConfig(configKey, "roles", "murder");
+        String playerRole = MurderMysteryManager.getRoleString(player.getName());
+        String roleColor = Config.readConfig(configKey, "roles", playerRole + "_color");
+        String roleResult = Config.readConfig(configKey, "roles", playerRole);
+        String quitMessage = Config.readConfig(configKey, "quit_message").replace("&", "§").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", player.getName()).replace("{role_color}", roleColor);
         event.setQuitMessage(quitMessage);
     }
     @EventHandler
@@ -149,7 +157,7 @@ public class PlayerEvents implements Listener
         {
             event.getItem().remove();
             Player player = event.getPlayer();
-            player.getInventory().setItem(0, new ItemStack(266));
+            player.getInventory().setItem(8, new ItemStack(266));
         }
     }
 }
