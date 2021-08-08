@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import ru.owopeef.owomurdermystery.utils.Config;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +19,7 @@ import java.util.Objects;
 public class MurderMysteryManager
 {
     static Plugin plugin = JavaPlugin.getPlugin(Main.class);
-    public static String configKey = Main.configKey;
+    public static String configKey = Config.configKey;
     public static String murder, detective, innocents, ghosts = "";
     public static void startGame()
     {
@@ -39,20 +40,20 @@ public class MurderMysteryManager
                 Material murderWeapon = Material.IRON_SWORD;
                 try
                 {
-                    murderWeapon = Material.getMaterial(readConfig(configKey, "murder_weapon").toUpperCase());
+                    murderWeapon = Material.getMaterial(Config.readConfig(configKey, "murder_weapon").toUpperCase());
                 }
                 catch (Exception e)
                 {
                     plugin.getLogger().warning("Material not found!\n" + e.getMessage());
                 }
-                int murderSlot = Integer.parseInt(readConfig(configKey, "murder_weapon_slot"));
+                int murderSlot = Integer.parseInt(Config.readConfig(configKey, "murder_weapon_slot"));
                 playerList.get(a).getInventory().setItem(murderSlot, new ItemStack(murderWeapon));
                 murder = playerList.get(a).getName();
             }
             if (a == detectiveRandom)
             {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
-                int detectiveSlot = Integer.parseInt(readConfig(configKey, "detective_weapon_slot"));
+                int detectiveSlot = Integer.parseInt(Config.readConfig(configKey, "detective_weapon_slot"));
                 playerList.get(a).getInventory().setItem(detectiveSlot, new ItemStack(Item.getId(Item.getById(261))));
                 detective = playerList.get(a).getName();
             }
@@ -79,11 +80,11 @@ public class MurderMysteryManager
             {
                 playerRole = "murder";
             }
-            String roleColor = readConfig(configKey, "roles." + playerRole + "_color");
-            String roleResult = readConfig(configKey, "roles." + playerRole);
-            String roleTitle = readConfig(configKey, "role_title").replace("{role_color}", roleColor).replace("{role}", roleResult);
-            String roleSubtitle = readConfig(configKey, "roles." + playerRole + "_subtitle");
-            String roleWarning = readConfig(configKey, "roles." + playerRole + "_warning");
+            String roleColor = Config.readConfig(configKey, "roles", playerRole + "_color");
+            String roleResult = Config.readConfig(configKey, "roles", playerRole);
+            String roleTitle = Config.readConfig(configKey, "role_title").replace("{role_color}", roleColor).replace("{role}", roleResult);
+            String roleSubtitle = Config.readConfig(configKey, "roles", playerRole + "_subtitle");
+            String roleWarning = Config.readConfig(configKey, "roles", playerRole + "_warning");
             playerList.get(a).sendTitle(roleTitle, roleSubtitle);
             playerList.get(a).sendMessage(roleWarning);
             a++;
@@ -94,12 +95,12 @@ public class MurderMysteryManager
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         if (innocentsWin)
         {
-            String winInnocentMessage = readConfig(configKey, "innocent_win_message");
+            String winInnocentMessage = Config.readConfig(configKey, "innocent_win_message");
             plugin.getServer().broadcastMessage(winInnocentMessage);
         }
         else
         {
-            String winMurderMessage = readConfig(configKey, "murder_win_message");
+            String winMurderMessage = Config.readConfig(configKey, "murder_win_message");
             plugin.getServer().broadcastMessage(winMurderMessage);
         }
     }
@@ -142,8 +143,8 @@ public class MurderMysteryManager
         player.setAllowFlight(true);
         player.setFlying(true);
         playSound(player, Sound.SUCCESSFUL_HIT);
-        String deathTitle = readConfig(configKey, "death_title");
-        String deathSubTitle = readConfig(configKey, "death_subtitle");
+        String deathTitle = Config.readConfig(configKey, "death_title");
+        String deathSubTitle = Config.readConfig(configKey, "death_subtitle");
         player.sendTitle(deathTitle, deathSubTitle);
         PotionEffect pe = PotionEffectType.INVISIBILITY.createEffect(99999999, 10);
         player.addPotionEffect(pe);
@@ -172,9 +173,5 @@ public class MurderMysteryManager
     public static void playSound(Player player, Sound sound)
     {
         player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
-    }
-    public static String readConfig(String path, String parent)
-    {
-        return plugin.getConfig().get(path + "." + parent).toString();
     }
 }

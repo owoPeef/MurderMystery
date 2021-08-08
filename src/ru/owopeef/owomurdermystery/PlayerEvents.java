@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
+import ru.owopeef.owomurdermystery.utils.Config;
 
 import java.util.*;
 
@@ -25,7 +26,7 @@ public class PlayerEvents implements Listener
 {
     Plugin plugin = JavaPlugin.getPlugin(Main.class);
     String donatePrefix;
-    public String configKey = Main.configKey;
+    public String configKey = Config.configKey;
     @EventHandler
     public void onJoin(PlayerJoinEvent event)
     {
@@ -33,13 +34,13 @@ public class PlayerEvents implements Listener
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + player.getName());
         donatePrefix = "§7";
-        float startPosX = Float.parseFloat(readConfig("maps", "0.start_pos_x"));
-        float startPosY = Float.parseFloat(readConfig("maps", "0.start_pos_y"));
-        float startPosZ = Float.parseFloat(readConfig("maps", "0.start_pos_z"));
-        String worldName = readConfig("maps", "0.world_name");
+        float startPosX = Float.parseFloat(Config.readConfig("maps", "0", "start_pos_x"));
+        float startPosY = Float.parseFloat(Config.readConfig("maps", "0", "start_pos_y"));
+        float startPosZ = Float.parseFloat(Config.readConfig("maps", "0", "start_pos_z"));
+        String worldName = Config.readConfig("maps", "0", "world_name");
         int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size() + 1;
-        int maxPlayers = Integer.parseInt(readConfig("maps", "0.max_players"));
-        String joinMessage = readConfig(configKey, "join_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
+        int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
+        String joinMessage = Config.readConfig(configKey, "join_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
         event.getPlayer().teleport(new Location(event.getPlayer().getWorld(), startPosX, startPosY, startPosZ));
         player.setPlayerListName(donatePrefix + player.getName());
         event.setJoinMessage(joinMessage);
@@ -51,10 +52,10 @@ public class PlayerEvents implements Listener
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + player.getName());
         donatePrefix = "§7";
-        String worldName = readConfig("maps", "0.world_name");
+        String worldName = Config.readConfig("maps", "0", "world_name");
         int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
-        int maxPlayers = Integer.parseInt(readConfig("maps", "0.max_players"));
-        String quitMessage = readConfig(configKey, "quit_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
+        int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
+        String quitMessage = Config.readConfig(configKey, "quit_message").replace("{donate_prefix}", donatePrefix).replace("{nick}", player.getName()).replace("{players_count}", String.valueOf(playersInWorld)).replace("{max_players}", String.valueOf(maxPlayers));
         event.setQuitMessage(quitMessage);
     }
     @EventHandler
@@ -93,7 +94,7 @@ public class PlayerEvents implements Listener
             Material murderWeapon = Material.IRON_SWORD;
             try
             {
-                murderWeapon = Material.getMaterial(readConfig("maps", "0.murder_weapon").toUpperCase());
+                murderWeapon = Material.getMaterial(Config.readConfig("maps", "0", "murder_weapon").toUpperCase());
             }
             catch (Exception e)
             {
@@ -123,7 +124,7 @@ public class PlayerEvents implements Listener
                 if (role == 3)
                 {
                     int o = 0;
-                    String worldName = readConfig("maps", "0.world_name");
+                    String worldName = Config.readConfig("maps", "0", "world_name");
                     List<Player> playerList = plugin.getServer().getWorld(worldName).getPlayers();
                     while (o != playerList.size())
                     {
@@ -150,9 +151,5 @@ public class PlayerEvents implements Listener
             Player player = event.getPlayer();
             player.getInventory().setItem(0, new ItemStack(266));
         }
-    }
-    public String readConfig(String path, String parent)
-    {
-        return plugin.getConfig().get(path + "." + parent).toString();
     }
 }

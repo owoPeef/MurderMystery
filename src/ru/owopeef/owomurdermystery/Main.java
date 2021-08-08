@@ -2,27 +2,19 @@ package ru.owopeef.owomurdermystery;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.owopeef.owomurdermystery.commands.Commands;
-
-import java.io.File;
+import ru.owopeef.owomurdermystery.utils.Config;
 
 public class Main extends JavaPlugin
 {
     // TODO
-    // Control panel plugin
-    public static String configKey = "settings";
+    // Control Panel Plugin
+    // &&&
+    // Chat Manager Plugin
     @Override
     public void onEnable()
     {
-        loadConfig();
+        Config.loadConfig();
         getCommand("murder_mystery").setExecutor(new Commands());
         getServer().getPluginManager().registerEvents(new PlayerEvents(), this);
-    }
-    public void loadConfig() {
-        File currentFile = new File(System.getProperty("user.dir") + "\\plugins\\owoMurderMystery\\config.yml");
-        if (!currentFile.exists())
-        {
-            getConfig().options().copyDefaults(true);
-            saveConfig();
-        }
     }
 }
