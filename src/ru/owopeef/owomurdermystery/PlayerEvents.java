@@ -1,5 +1,6 @@
 package ru.owopeef.owomurdermystery;
 
+import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -165,7 +166,17 @@ public class PlayerEvents implements Listener
             ItemStack is = player.getInventory().getItem(8);
             if (is != null)
             {
-                gold.setAmount(amount);
+                if (amount == 10)
+                {
+                    int o = 0;
+                    while (o != player.getInventory().getItem(8).getAmount())
+                    {
+                        player.getInventory().removeItem(gold);
+                        o++;
+                    }
+                    player.getInventory().setItem(1, new ItemStack(Item.getId(Item.getById(261))));
+                    player.getInventory().setItem(2, new ItemStack(Item.getId(Item.getById(262))));
+                }
                 if (amount == 1) {
                     player.getInventory().addItem(gold);
                 }

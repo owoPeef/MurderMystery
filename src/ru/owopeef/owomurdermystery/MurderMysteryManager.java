@@ -53,6 +53,13 @@ public class MurderMysteryManager
             {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
                 int detectiveSlot = Integer.parseInt(Config.readConfig(configKey, "detective_weapon_slot"));
+                playerList.get(a).getInventory().setItem(10, new ItemStack(Item.getId(Item.getById(262))));
+                int t = 0;
+                while (t != 62)
+                {
+                    playerList.get(a).getInventory().addItem(new ItemStack(Item.getId(Item.getById(262))));
+                    t++;
+                }
                 playerList.get(a).getInventory().setItem(detectiveSlot, new ItemStack(Item.getId(Item.getById(261))));
                 detective = playerList.get(a).getName();
             }
