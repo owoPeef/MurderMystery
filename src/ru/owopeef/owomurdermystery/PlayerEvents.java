@@ -10,6 +10,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -107,14 +109,11 @@ public class PlayerEvents implements Listener
                 Player shooter = (Player) arrow.getShooter();
                 int role = MurderMysteryManager.getRole(String.valueOf(shooter));
                 arrow.remove();
-                plugin.getLogger().info("Role: " + role);
-                if (role == 2)
+                if (role == 2 || role == 1)
                 {
-                    plugin.getLogger().info("if role == 2");
                     role = MurderMysteryManager.getRole(event.getEntity().getName());
                     if (role == 3)
                     {
-                        plugin.getLogger().info("if role == 3");
                         MurderMysteryManager.playerDeath(event.getEntity().getName());
                     }
                 }
@@ -144,6 +143,16 @@ public class PlayerEvents implements Listener
         }
     }
     @EventHandler
+    public void onDrop(PlayerDropItemEvent event)
+    {
+        event.setCancelled(true);
+    }
+    @EventHandler
+    public void onDrag(InventoryClickEvent event)
+    {
+        event.setCancelled(true);
+    }
+    @EventHandler
     public void onPickup(PlayerPickupItemEvent event)
     {
         if (event.getItem().getItemStack().getData().getItemType() == Material.GOLD_INGOT)
@@ -152,9 +161,23 @@ public class PlayerEvents implements Listener
             event.getItem().remove();
             Player player = event.getPlayer();
             ItemStack gold = new ItemStack(266);
-            if (Objects.equals(player.getInventory().getItem(8), gold))
+            int amount = event.getItem().getItemStack().getAmount();
+            ItemStack is = player.getInventory().getItem(8);
+            if (is != null)
             {
-                player.getInventory().addItem(gold);
+                gold.setAmount(amount);
+                if (amount == 1) {
+                    player.getInventory().addItem(gold);
+                }
+                if (amount > 1)
+                {
+                    int b = 0;
+                    while (b != amount - 1)
+                    {
+                        player.getInventory().addItem(gold);
+                        b++;
+                    }
+                }
             }
             else
             {

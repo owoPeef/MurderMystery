@@ -14,8 +14,6 @@ import ru.owopeef.owomurdermystery.utils.Config;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Timer;
-import java.util.TimerTask;
 
 @SuppressWarnings("deprecation")
 public class MurderMysteryManager
@@ -24,23 +22,6 @@ public class MurderMysteryManager
     public static String configKey = Config.configKey;
     public static String murder, detective, innocents, ghosts = "";
     public static void startGame() throws IOException, InvalidConfigurationException {
-        Timer timer = new Timer();
-        Thread th = new Thread(() -> timer.schedule(new TimerTask() {
-            public void run() {
-                String[] split = Config.readConfigString("maps", "0", "gold").split(";");
-                int randomInt = (int) (Math.random() * split.length - 1);
-                String[] cords = split[randomInt].split(",");
-                World w = Bukkit.getWorld("world");
-                float x = Float.parseFloat(cords[0]);
-                float y = Float.parseFloat(cords[1]);
-                float z = Float.parseFloat(cords[2]);
-                Location loc = new Location(w, x, y, z);
-                ItemStack gold = new ItemStack(266);
-                plugin.getServer().getWorld(w.getName()).dropItemNaturally(loc, gold);
-                plugin.getServer().getPlayer("owoPeef1").sendMessage("§aGold spawned at " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ());
-            }
-        }, 0, 10000));
-        th.start();
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         List<Player> playerList = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers();
         int playerSize = playerList.size();
