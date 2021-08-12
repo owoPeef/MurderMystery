@@ -1,9 +1,8 @@
 package ru.owopeef.owomurdermystery;
 
 import net.minecraft.server.v1_8_R3.Item;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -12,6 +11,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import ru.owopeef.owomurdermystery.utils.Config;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,8 +21,26 @@ public class MurderMysteryManager
     static Plugin plugin = JavaPlugin.getPlugin(Main.class);
     public static String configKey = Config.configKey;
     public static String murder, detective, innocents, ghosts = "";
-    public static void startGame()
-    {
+    public static void startGame() throws IOException, InvalidConfigurationException {
+        Thread th = new Thread(() -> {
+            while(true)
+            {
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    String[] split = Config.readConfigString("maps", "0", "gold").split(";");
+                    int randomInt = (int) (Math.random() * split.length - 1);
+                    String[] cords = split[randomInt].split(",");
+                    World w = Bukkit.getWorld("world");
+                    float x = Float.parseFloat(cords[0]);
+                    float y = Float.parseFloat(cords[1]);
+                    float z = Float.parseFloat(cords[2]);
+                    Location loc = new Location(w, x, y, z);
+                    ItemStack gold = new ItemStack(266);
+                    plugin.getServer().getWorld(w.getName()).dropItemNaturally(loc, gold);
+                    plugin.getServer().getPlayer("owoPeef1").sendMessage("§aGold spawned at " + loc.getBlockX() + " " + loc.getBlockY() + " " + loc.getBlockZ());
+                }, 10L);
+            }
+        });
+        th.start();
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         List<Player> playerList = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers();
         int playerSize = playerList.size();
@@ -77,8 +95,7 @@ public class MurderMysteryManager
             a++;
         }
     }
-    public static void stopGame(Boolean innocentsWin)
-    {
+    public static void stopGame(Boolean innocentsWin) throws IOException, InvalidConfigurationException {
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         if (innocentsWin)
         {
@@ -143,8 +160,7 @@ public class MurderMysteryManager
         }
         return "";
     }
-    public static void playerDeath(String nick)
-    {
+    public static void playerDeath(String nick) throws IOException, InvalidConfigurationException {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + nick);
         innocents = innocents.replace(nick + ",", "");
         ghosts += nick + ",";

@@ -7,8 +7,6 @@ import ru.owopeef.owomurdermystery.utils.Config;
 public class Main extends JavaPlugin
 {
     // TODO
-    // Control Panel Plugin
-    // &&&
     // Chat Manager Plugin
     @Override
     public void onEnable()

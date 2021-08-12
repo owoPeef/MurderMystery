@@ -1,18 +1,15 @@
-##############################################
-# {donate_prefix} - Player donate prefix     #
-# {nick} - Player nickname                   #
-# {players_count} - Current players count    #
-# {max_players} - Max players in game        #
-# {murder_role} - Murder role                #
-# {role} - Player role                       #
-##############################################
+# {nick} - Player nickname
+# {players_count} - Current players count
+# {max_players} - Max players in game
+# {murder_role} - Murder role
+# {role} - Player role
 settings:
   murder_weapon: iron_sword
   murder_weapon_slot: 1
   detective_weapon_slot: 1
   gold_slot: 8
-  join_message: "{donate_prefix}{nick} §ehas joined (§b{players_count}§e/§b{max_players}§e)!"
-  quit_message: "{donate_prefix}{nick} §ehas quit!"
+  join_message: "§7{nick}§e has joined (§b{players_count}§e/§b{max_players}§e)!"
+  quit_message: "§7{nick}§e has quit!"
   death_title: "§cВы умерли!"
   death_subtitle: "§e{murder_role} убил вас"
   role_title: "§{role_color}РОЛЬ: {role}"
@@ -41,8 +38,10 @@ settings:
     ghost_subtitle: ""
 maps:
   0:
-    start_pos_x: 0.5
-    start_pos_y: 65
-    start_pos_z: 0.5
+    start_pos_x: 220
+    start_pos_y: 121
+    start_pos_z: 1339
     world_name: world
     max_players: 16
+    # gold format: x,y,z;
+    gold: 0,0,0;

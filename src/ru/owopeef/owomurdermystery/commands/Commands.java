@@ -10,6 +10,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.owopeef.owomurdermystery.Main;
 import ru.owopeef.owomurdermystery.MurderMysteryManager;
+import ru.owopeef.owomurdermystery.utils.Config;
 
 import java.util.Objects;
 
@@ -47,12 +48,28 @@ public class Commands implements CommandExecutor
                                     MurderMysteryManager.playSound(player, Sound.CLICK);
                                     plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                                         MurderMysteryManager.playSound(player, Sound.CLICK);
-                                        MurderMysteryManager.startGame();
+                                        try {
+                                            MurderMysteryManager.startGame();
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }, 20L);
                                 }, 20L);
                             }, 20L);
                         }, 20L);
                     }, 20L); // 20 ticks = 1 sec
+                }
+            }
+            if (args.length == 2)
+            {
+                if (Objects.equals(args[0], "add_gold"))
+                {
+                    try {
+                        Config.appendConfig(player.getLocation().getBlockX() + "," + player.getLocation().getBlockY() + "," + player.getLocation().getBlockZ(), "maps", args[1], "gold");
+                        player.sendMessage("§aВы успешно установили точку спавна золота! §e("+player.getLocation().getBlockX() + " " + player.getLocation().getBlockY() + " " + player.getLocation().getBlockZ()+")");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
