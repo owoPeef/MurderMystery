@@ -4,6 +4,7 @@ import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
@@ -179,6 +180,7 @@ public class PlayerEvents implements Listener
                 }
                 if (amount == 1) {
                     player.getInventory().addItem(gold);
+                    MurderMysteryManager.playSound(player, Sound.ITEM_PICKUP);
                 }
                 if (amount > 1)
                 {
@@ -188,11 +190,13 @@ public class PlayerEvents implements Listener
                         player.getInventory().addItem(gold);
                         b++;
                     }
+                    MurderMysteryManager.playSound(player, Sound.ITEM_PICKUP);
                 }
             }
             else
             {
                 player.getInventory().setItem(8, gold);
+                MurderMysteryManager.playSound(player, Sound.ITEM_PICKUP);
             }
         }
     }

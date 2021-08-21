@@ -6,8 +6,7 @@ import ru.owopeef.owomurdermystery.utils.Config;
 
 public class Main extends JavaPlugin
 {
-    // TODO
-    // Chat Manager Plugin
+    // String version = getDescription().getVersion();
     @Override
     public void onEnable()
     {

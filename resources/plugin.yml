@@ -1,6 +1,13 @@
 name: owoMurderMystery
 main: ru.owopeef.owomurdermystery.Main
 version: 1.0
+permissions:
+  murder_mystery.start:
+    description: Start a game.
+    default: op
+  murder_mystery.add_gold:
+    description: Add a gold spawn position to config.
+    default: op
 commands:
   murder_mystery:
     description: Murder Mystery commands.

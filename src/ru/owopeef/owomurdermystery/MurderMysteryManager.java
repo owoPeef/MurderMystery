@@ -9,9 +9,12 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.*;
 import ru.owopeef.owomurdermystery.utils.Config;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,10 +24,12 @@ public class MurderMysteryManager
     static Plugin plugin = JavaPlugin.getPlugin(Main.class);
     public static String configKey = Config.configKey;
     public static String murder, detective, innocents, ghosts = "";
-    public static void startGame() throws IOException, InvalidConfigurationException {
+    public static void startGame() throws IOException, InvalidConfigurationException
+    {
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         List<Player> playerList = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers();
         int playerSize = playerList.size();
+        startGoldSpawn();
         int murderRandom = (int) (Math.random() * playerSize); int detectiveRandom = (int) (Math.random() * playerSize); int a = 0;
         while (murderRandom == detectiveRandom)
         {
@@ -182,6 +187,56 @@ public class MurderMysteryManager
             }
             i++;
         }
+    }
+    // List<String> messages
+    public static void scoreboardSet(Player player) throws IOException, InvalidConfigurationException {
+        String mapName = "map";
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        final Scoreboard board = manager.getNewScoreboard();
+        final Objective objective = board.registerNewObjective("murder_mystery", "waiting_lobby");
+        int playersInWorld = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers().size();
+        int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        objective.setDisplayName("§e§lMurder Mystery".toUpperCase());
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy");
+        LocalDateTime now = LocalDateTime.now();
+        Score score = objective.getScore("§7"+dtf.format(now));
+        score.setScore(10);
+        Score score2 = objective.getScore("§fКарта: §a" + mapName);
+        score2.setScore(9);
+        Score score3 = objective.getScore("§fИгроков: §a" + playersInWorld + "/" + maxPlayers);
+        score3.setScore(8);
+        Score score4 = objective.getScore("§fНачнётся через §a{seconds}с");
+        score4.setScore(7);
+        Score score5 = objective.getScore("§ewww.myserver.com");
+        score5.setScore(6);
+        player.setScoreboard(board);
+    }
+    public static void startGoldSpawn()
+    {
+        Thread th = new Thread(() -> {
+            while(true)
+            {
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    String[] split = Config.readConfigString("maps", "0", "gold").split(";");
+                    int randomInt = (int) (Math.random() * split.length - 1);
+                    String[] cords = split[randomInt].split(",");
+                    World w = Bukkit.getWorlds().get(0);
+                    float x = Float.parseFloat(cords[0]);
+                    float y = Float.parseFloat(cords[1]);
+                    float z = Float.parseFloat(cords[2]);
+                    Location loc = new Location(w, x, y, z);
+                    ItemStack gold = new ItemStack(266);
+                    Bukkit.getWorlds().get(0).dropItemNaturally(loc, gold);
+                }, 20L);
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        th.start();
     }
     public static void playSound(Player player, Sound sound)
     {
