@@ -4,7 +4,6 @@ import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,7 +11,6 @@ import ru.owopeef.owomurdermystery.Main;
 import ru.owopeef.owomurdermystery.MurderMysteryManager;
 import ru.owopeef.owomurdermystery.utils.Config;
 
-import java.io.IOException;
 import java.util.Objects;
 
 public class Commands implements CommandExecutor
@@ -31,13 +29,9 @@ public class Commands implements CommandExecutor
             }
             if (args.length == 1)
             {
-                if (Objects.equals(args[0], "test_scoreboard"))
+                if (Objects.equals(args[0], "game_status"))
                 {
-                    try {
-                        MurderMysteryManager.scoreboardSet(player);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    player.sendMessage("Current game status: " + MurderMysteryManager.gameStatus());
                 }
                 if (Objects.equals(args[0], "start"))
                 {

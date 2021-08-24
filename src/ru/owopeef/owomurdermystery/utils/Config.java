@@ -6,6 +6,7 @@ import ru.owopeef.owomurdermystery.Main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 public class Config
@@ -42,8 +43,8 @@ public class Config
         plugin.saveConfig();
     }
 
-    public static String readConfigString(String path, String parent1, String parent2)
-    {
+    public static String readConfigString(String path, String parent1, String parent2) throws IOException, InvalidConfigurationException {
+        reloadConfig();
         return plugin.getConfig().getString(path + "." + parent1 + "." + parent2);
     }
 
@@ -55,5 +56,15 @@ public class Config
     public static String readConfig(String path, String parent1, String parent2) throws IOException, InvalidConfigurationException {
         reloadConfig();
         return plugin.getConfig().get(path + "." + parent1 + "." + parent2).toString();
+    }
+
+    public static String readConfig(String path, String parent1, String parent2, String parent3) throws IOException, InvalidConfigurationException {
+        reloadConfig();
+        return plugin.getConfig().get(path + "." + parent1 + "." + parent2 + "." + parent3).toString();
+    }
+
+    public static List<String> readConfigStringList(String path, String parent2, String parent3, String parent4) throws IOException, InvalidConfigurationException {
+        reloadConfig();
+        return plugin.getConfig().getStringList(path + "." + parent2 + "." + parent3 + "." + parent4);
     }
 }

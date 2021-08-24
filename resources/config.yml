@@ -15,6 +15,36 @@ settings:
   role_title: "§{role_color}РОЛЬ: {role}"
   innocent_win_message: "§aПобеда Мирных жителей!"
   murder_win_message: "§cПобеда Маньяка!"
+  scoreboard:
+    waiting:
+      title: '§e§lMURDER MYSTERY'
+      lines:
+        - '§7{now}'
+        - ''
+        - '§fКарта: §a{map_name}'
+        - '§fИгроков: §a{players_count}/{max_players}'
+        - ''
+        - '§fНачнётся через §a{seconds}с'
+        - ''
+        - '§ewww.myserver.com'
+    started:
+      title: '§c§lMURDER MYSTERY'
+      lines:
+        - '§7{now}'
+        - ''
+        - '§fРоль: {role}'
+        - ''
+        - '§fМирных жителей: §a{players_count}'
+        - '§fВремя: §a{time}'
+        - ''
+        - '§fДетектив: §aЖив'
+        - '§fКарта: §a{map_name}'
+        - ''
+        - '§ewww.myserver.com'
+    ended:
+      title: ""
+      lines:
+        - ""
   roles:
     murder: "Маньяк"
     murder_eng: "Murder"

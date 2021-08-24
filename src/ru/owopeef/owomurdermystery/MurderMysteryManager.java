@@ -15,6 +15,8 @@ import ru.owopeef.owomurdermystery.utils.Config;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,9 +25,106 @@ public class MurderMysteryManager
 {
     static Plugin plugin = JavaPlugin.getPlugin(Main.class);
     public static String configKey = Config.configKey;
+    // Game Statuses
+    //  0   -   game not started
+    //  1   -   game started
+    //  2   -   game ended
+    public static int gameStatus0 = 0;
+    public static int minutes = 3;
+    public static int seconds = 0;
     public static String murder, detective, innocents, ghosts = "";
+    // THREADS
+    // update
+    public static Thread update = new Thread(() -> {
+        while (true)
+        {
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                try {
+                    String title = Config.readConfig("settings", "scoreboard", "started", "title");
+                    List<String> messages = Config.readConfigStringList("settings", "scoreboard", "started", "lines");
+                    scoreboardSet(title, messages);
+                } catch (Exception e) {
+                    plugin.getLogger().info(e.getLocalizedMessage());
+                }
+            }, 20L);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
+    // timer_th
+    public static Thread timer_th = new Thread(() -> {
+        while(true)
+        {
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                if (minutes == 0 && seconds == 0)
+                {
+                    try {
+                        stopGame(true);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (seconds == 0)
+                {
+                    minutes--;
+                    seconds = 59;
+                }
+                else
+                {
+                    seconds--;
+                }
+            }, 20L);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
+    // th
+    public static Thread th = new Thread(() -> {
+        while(true)
+        {
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                String[] split = new String[0];
+                try {
+                    split = Config.readConfigString("maps", "0", "gold").split(";");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                int randomInt = (int) (Math.random() * split.length - 1);
+                String[] cords = split[randomInt].split(",");
+                World w = Bukkit.getWorlds().get(0);
+                float x = Float.parseFloat(cords[0]);
+                float y = Float.parseFloat(cords[1]);
+                float z = Float.parseFloat(cords[2]);
+                Location loc = new Location(w, x, y, z);
+                ItemStack gold = new ItemStack(266);
+                Bukkit.getWorlds().get(0).dropItemNaturally(loc, gold);
+            }, 20L);
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    });
+    // END THREADS
     public static void startGame() throws IOException, InvalidConfigurationException
     {
+        try {
+            String title = Config.readConfig("settings", "scoreboard", "started", "title");
+            List<String> messages = Config.readConfigStringList("settings", "scoreboard", "started", "lines");
+            scoreboardSet(title, messages);
+            timerStart();
+            scoreboardUpdate();
+        } catch (Exception e) {
+            plugin.getLogger().info(e.getLocalizedMessage());
+        }
+        gameStatus0 = 1;
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         List<Player> playerList = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers();
         int playerSize = playerList.size();
@@ -89,6 +188,10 @@ public class MurderMysteryManager
         }
     }
     public static void stopGame(Boolean innocentsWin) throws IOException, InvalidConfigurationException {
+        gameStatus0 = 2;
+        timerStop();
+        scoreboardStop();
+        stopGoldSpawn();
         murder = ""; detective = ""; innocents = ""; ghosts = "";
         if (innocentsWin)
         {
@@ -103,7 +206,6 @@ public class MurderMysteryManager
     }
     public static int getRole(String nick)
     {
-        plugin.getLogger().info("getRole("+nick+"), Detective: " + detective + ", Murder: " + murder);
         try
         {
             String[] players = innocents.split(",");
@@ -158,6 +260,9 @@ public class MurderMysteryManager
         innocents = innocents.replace(nick + ",", "");
         ghosts += nick + ",";
         Player player = Bukkit.getPlayer(nick);
+        String title = Config.readConfig("settings", "scoreboard", "started", "title");
+        List<String> messages = Config.readConfigStringList("settings", "scoreboard", "started", "lines");
+        scoreboardSet(title, messages);
         player.setAllowFlight(true);
         player.setFlying(true);
         playSound(player, Sound.SUCCESSFUL_HIT);
@@ -188,55 +293,124 @@ public class MurderMysteryManager
             i++;
         }
     }
-    // List<String> messages
-    public static void scoreboardSet(Player player) throws IOException, InvalidConfigurationException {
-        String mapName = "map";
+    public static void scoreboardSet(String title, List<String> messages) throws IOException, InvalidConfigurationException {
+        String map_name = "map";
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         final Scoreboard board = manager.getNewScoreboard();
-        final Objective objective = board.registerNewObjective("murder_mystery", "waiting_lobby");
-        int playersInWorld = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers().size();
-        int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
+        final Objective objective = board.registerNewObjective("murder_mystery", "scoreboard");
+        List<Player> players = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers();
+        int d = 0;
+        int players_size = players.size();
+        int players_count = 0;
+        boolean potionFounded;
+        int role = 0;
+        while (d != players_size)
+        {
+            potionFounded = false;
+            Collection<PotionEffect> pe = players.get(d).getActivePotionEffects();
+            ArrayList<PotionEffect> potionEffects = new ArrayList<>(pe);
+            int potions_size = potionEffects.size();
+            int c = 0;
+            while (c != potions_size)
+            {
+                PotionEffect currentEffect = potionEffects.get(c);
+                if (Objects.equals(currentEffect.getType().getName(), "INVISIBILITY"))
+                {
+                    potionFounded = true;
+                }
+                c++;
+            }
+            if (!potionFounded)
+            {
+                players_count++;
+            }
+            role = getRole(players.get(d).getName());
+            d++;
+        }
+        int max_players = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName("§e§lMurder Mystery".toUpperCase());
+        objective.setDisplayName(title);
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yy");
         LocalDateTime now = LocalDateTime.now();
-        Score score = objective.getScore("§7"+dtf.format(now));
-        score.setScore(10);
-        Score score2 = objective.getScore("§fКарта: §a" + mapName);
-        score2.setScore(9);
-        Score score3 = objective.getScore("§fИгроков: §a" + playersInWorld + "/" + maxPlayers);
-        score3.setScore(8);
-        Score score4 = objective.getScore("§fНачнётся через §a{seconds}с");
-        score4.setScore(7);
-        Score score5 = objective.getScore("§ewww.myserver.com");
-        score5.setScore(6);
-        player.setScoreboard(board);
+        int a = 0;
+        int scoreCount = messages.size();
+        while (a != messages.size())
+        {
+            assert false;
+            String time = "";
+            if (String.valueOf(seconds).length() == 1)
+            {
+                time = "0" + minutes + ":0" + seconds;
+            }
+            if (String.valueOf(seconds).length() == 2)
+            {
+                time = "0" + minutes + ":" + seconds;
+            }
+            String currentMessage = messages.get(a).replace("{now}", dtf.format(now)).replace("{map_name}", map_name).replace("{players_count}", String.valueOf(players_count - 1)).replace("{max_players}", String.valueOf(max_players)).replace("{time}", time);
+            if (role == 0)
+            {
+                currentMessage = currentMessage.replace("{role}", "§7Призрак");
+            }
+            if (role == 1)
+            {
+                currentMessage = currentMessage.replace("{role}", "§aМирный житель");
+            }
+            if (role == 2)
+            {
+                currentMessage = currentMessage.replace("{role}", "§bДетектив");
+            }
+            if (role == 3)
+            {
+                currentMessage = currentMessage.replace("{role}", "§cУбийца");
+            }
+            if (currentMessage.length() == 0)
+            {
+                int b = 0;
+                while (b != a)
+                {
+                    currentMessage += " ";
+                    b++;
+                }
+            }
+            Score e = objective.getScore(currentMessage);
+            e.setScore(scoreCount);
+            scoreCount--;
+            a++;
+        }
+        int o = 0;
+        while (o != players_size)
+        {
+            players.get(o).setScoreboard(board);
+            o++;
+        }
+    }
+    public static void scoreboardUpdate()
+    {
+        update.start();
+    }
+    public static void scoreboardStop()
+    {
+        update.stop();
+    }
+    public static void timerStart()
+    {
+        timer_th.start();
+    }
+    public static void timerStop()
+    {
+        timer_th.stop();
     }
     public static void startGoldSpawn()
     {
-        Thread th = new Thread(() -> {
-            while(true)
-            {
-                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                    String[] split = Config.readConfigString("maps", "0", "gold").split(";");
-                    int randomInt = (int) (Math.random() * split.length - 1);
-                    String[] cords = split[randomInt].split(",");
-                    World w = Bukkit.getWorlds().get(0);
-                    float x = Float.parseFloat(cords[0]);
-                    float y = Float.parseFloat(cords[1]);
-                    float z = Float.parseFloat(cords[2]);
-                    Location loc = new Location(w, x, y, z);
-                    ItemStack gold = new ItemStack(266);
-                    Bukkit.getWorlds().get(0).dropItemNaturally(loc, gold);
-                }, 20L);
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
         th.start();
+    }
+    public static void stopGoldSpawn()
+    {
+        th.stop();
+    }
+    public static Integer gameStatus()
+    {
+        return gameStatus0;
     }
     public static void playSound(Player player, Sound sound)
     {

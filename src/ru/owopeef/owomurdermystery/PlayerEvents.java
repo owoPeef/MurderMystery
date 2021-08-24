@@ -36,6 +36,9 @@ public class PlayerEvents implements Listener
     @EventHandler
     public void onJoin(PlayerJoinEvent event) throws IOException, InvalidConfigurationException {
         Player player = event.getPlayer();
+        String title = Config.readConfig("settings", "scoreboard", "waiting", "title");
+        List<String> messages = Config.readConfigStringList("settings", "scoreboard", "waiting", "lines");
+        MurderMysteryManager.scoreboardSet(title, messages);
         player.removePotionEffect(PotionEffectType.INVISIBILITY);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + player.getName());
         donatePrefix = "§7";
@@ -54,15 +57,22 @@ public class PlayerEvents implements Listener
     @EventHandler
     public void onLeave(PlayerQuitEvent event) throws IOException, InvalidConfigurationException {
         Player player = event.getPlayer();
-        player.removePotionEffect(PotionEffectType.INVISIBILITY);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + player.getName());
-        donatePrefix = "§7";
-        String worldName = Config.readConfig("maps", "0", "world_name");
-        int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
-        int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
-        String murderRole = Config.readConfig(configKey, "roles", "murder");
-        String quitMessage = Config.readConfig(configKey, "quit_message").replace("&", "§").replace("{murder_role}", murderRole).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", player.getName());
-        event.setQuitMessage(quitMessage);
+        if (MurderMysteryManager.gameStatus() == 1)
+        {
+            event.setQuitMessage("");
+        }
+        else
+        {
+            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + player.getName());
+            donatePrefix = "§7";
+            String worldName = Config.readConfig("maps", "0", "world_name");
+            int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
+            int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
+            String murderRole = Config.readConfig(configKey, "roles", "murder");
+            String quitMessage = Config.readConfig(configKey, "quit_message").replace("&", "§").replace("{murder_role}", murderRole).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", player.getName());
+            event.setQuitMessage(quitMessage);
+        }
     }
     @EventHandler
     public void onWeatherChange(WeatherChangeEvent event)
@@ -147,12 +157,20 @@ public class PlayerEvents implements Listener
     @EventHandler
     public void onDrop(PlayerDropItemEvent event)
     {
-        event.setCancelled(true);
+        ItemStack gold_ingot = new ItemStack(Material.GOLD_INGOT);
+        if (Objects.equals(event.getItemDrop().getItemStack(), gold_ingot))
+        {
+            event.setCancelled(true);
+        }
     }
     @EventHandler
     public void onDrag(InventoryClickEvent event)
     {
-        event.setCancelled(true);
+        ItemStack gold_ingot = new ItemStack(Material.GOLD_INGOT);
+        if (Objects.equals(event.getCurrentItem(), gold_ingot))
+        {
+            event.setCancelled(true);
+        }
     }
     @EventHandler
     public void onPickup(PlayerPickupItemEvent event)
