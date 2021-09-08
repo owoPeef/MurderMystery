@@ -1,13 +1,9 @@
 package ru.owopeef.owomurdermystery.commands;
 
-import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
-import ru.owopeef.owomurdermystery.Main;
 import ru.owopeef.owomurdermystery.MurderMysteryManager;
 import ru.owopeef.owomurdermystery.utils.Config;
 
@@ -15,7 +11,6 @@ import java.util.Objects;
 
 public class Commands implements CommandExecutor
 {
-    Plugin plugin = JavaPlugin.getPlugin(Main.class);
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) { return true; }
@@ -29,10 +24,6 @@ public class Commands implements CommandExecutor
             }
             if (args.length == 1)
             {
-                if (Objects.equals(args[0], "game_status"))
-                {
-                    player.sendMessage("Current game status: " + MurderMysteryManager.gameStatus());
-                }
                 if (Objects.equals(args[0], "start"))
                 {
                     if (player.hasPermission("murder_mystery.start"))
