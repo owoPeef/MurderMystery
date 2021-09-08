@@ -37,32 +37,7 @@ public class Commands implements CommandExecutor
                 {
                     if (player.hasPermission("murder_mystery.start"))
                     {
-                        plugin.getServer().broadcastMessage(ChatColor.RED + "Начало игры через 5 секунду");
-                        MurderMysteryManager.playSound(player, Sound.CLICK);
-                        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                            plugin.getServer().broadcastMessage(ChatColor.RED + "Начало игры через 4 секунды");
-                            MurderMysteryManager.playSound(player, Sound.CLICK);
-                            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                                plugin.getServer().broadcastMessage(ChatColor.RED + "Начало игры через 3 секунды");
-                                MurderMysteryManager.playSound(player, Sound.CLICK);
-                                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                                    plugin.getServer().broadcastMessage(ChatColor.RED + "Начало игры через 2 секунды");
-                                    MurderMysteryManager.playSound(player, Sound.CLICK);
-                                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                                        plugin.getServer().broadcastMessage(ChatColor.RED + "Начало игры через 1 секунду");
-                                        MurderMysteryManager.playSound(player, Sound.CLICK);
-                                        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-                                            MurderMysteryManager.playSound(player, Sound.CLICK);
-                                            try {
-                                                MurderMysteryManager.startGame();
-                                            } catch (Exception e) {
-                                                e.printStackTrace();
-                                            }
-                                        }, 20L);
-                                    }, 20L);
-                                }, 20L);
-                            }, 20L);
-                        }, 20L); // 20 ticks = 1 sec
+                        MurderMysteryManager.startGame();
                     }
                     else
                     {

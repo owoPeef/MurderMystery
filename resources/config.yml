@@ -41,10 +41,6 @@ settings:
         - '§fКарта: §a{map_name}'
         - ''
         - '§ewww.myserver.com'
-    ended:
-      title: ""
-      lines:
-        - ""
   roles:
     murder: "Маньяк"
     murder_eng: "Murder"

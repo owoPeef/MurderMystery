@@ -112,80 +112,121 @@ public class MurderMysteryManager
             }
         }
     });
-    // END THREADS
-    public static void startGame() throws IOException, InvalidConfigurationException
+    public static void everyPlayerMakeSound(Sound sound)
     {
-        try {
-            String title = Config.readConfig("settings", "scoreboard", "started", "title");
-            List<String> messages = Config.readConfigStringList("settings", "scoreboard", "started", "lines");
-            scoreboardSet(title, messages);
-            timerStart();
-            scoreboardUpdate();
-        } catch (Exception e) {
-            plugin.getLogger().info(e.getLocalizedMessage());
-        }
-        gameStatus0 = 1;
-        murder = ""; detective = ""; innocents = ""; ghosts = "";
-        List<Player> playerList = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers();
-        int playerSize = playerList.size();
-        startGoldSpawn();
-        int murderRandom = (int) (Math.random() * playerSize); int detectiveRandom = (int) (Math.random() * playerSize); int a = 0;
-        while (murderRandom == detectiveRandom)
+        List<Player> playerList = plugin.getServer().getWorlds().get(0).getPlayers();
+        int a = 0;
+        while (playerList.size() != a)
         {
-            murderRandom = (int) (Math.random() * playerSize);
-            detectiveRandom = (int) (Math.random() * playerSize);
-        }
-        while (a != playerSize)
-        {
-            if (a == murderRandom)
-            {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
-                Material murderWeapon = Material.IRON_SWORD;
-                try
-                {
-                    murderWeapon = Material.getMaterial(Config.readConfig(configKey, "murder_weapon").toUpperCase());
-                }
-                catch (Exception e)
-                {
-                    plugin.getLogger().warning("Material not found!\n" + e.getMessage());
-                }
-                int murderSlot = Integer.parseInt(Config.readConfig(configKey, "murder_weapon_slot"));
-                playerList.get(a).getInventory().setItem(murderSlot, new ItemStack(murderWeapon));
-                murder = playerList.get(a).getName();
-            }
-            if (a == detectiveRandom)
-            {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
-                int detectiveSlot = Integer.parseInt(Config.readConfig(configKey, "detective_weapon_slot"));
-                playerList.get(a).getInventory().setItem(10, new ItemStack(Item.getId(Item.getById(262))));
-                int t = 0;
-                while (t != 62)
-                {
-                    playerList.get(a).getInventory().addItem(new ItemStack(Item.getId(Item.getById(262))));
-                    t++;
-                }
-                playerList.get(a).getInventory().setItem(detectiveSlot, new ItemStack(Item.getId(Item.getById(261))));
-                detective = playerList.get(a).getName();
-            }
-            if (a != murderRandom && a != detectiveRandom)
-            {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
-                innocents += playerList.get(a).getName() + ",";
-            }
-            String playerRole = getRoleString(playerList.get(a).getName());
-            String worldName = Config.readConfig("maps", "0", "world_name");
-            int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
-            int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
-            String murderRole = Config.readConfig(configKey, "roles", "murder");
-            String roleColor = Config.readConfig(configKey, "roles", playerRole + "_color");
-            String roleResult = Config.readConfig(configKey, "roles", playerRole);
-            String roleTitle = Config.readConfig(configKey, "role_title").replace("&", "§").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
-            String roleSubtitle = Config.readConfig(configKey, "roles", playerRole + "_subtitle").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
-            String roleWarning = Config.readConfig(configKey, "roles", playerRole + "_warning").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
-            playerList.get(a).sendTitle(roleTitle, roleSubtitle);
-            playerList.get(a).sendMessage(roleWarning);
+            MurderMysteryManager.playSound(playerList.get(a), sound);
             a++;
         }
+    }
+    public static void everyPlayerMakeSound(String text, Sound sound)
+    {
+        plugin.getServer().broadcastMessage(text);
+        List<Player> playerList = plugin.getServer().getWorlds().get(0).getPlayers();
+        int a = 0;
+        while (playerList.size() != a)
+        {
+            MurderMysteryManager.playSound(playerList.get(a), sound);
+            a++;
+        }
+    }
+    // END THREADS
+    public static void startGame()
+    {
+        everyPlayerMakeSound(ChatColor.RED + "Начало игры через 5 секунду", Sound.CLICK);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            everyPlayerMakeSound(ChatColor.RED + "Начало игры через 4 секунды", Sound.CLICK);
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                everyPlayerMakeSound(ChatColor.RED + "Начало игры через 3 секунды", Sound.CLICK);
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                    everyPlayerMakeSound(ChatColor.RED + "Начало игры через 2 секунды", Sound.CLICK);
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                        everyPlayerMakeSound(ChatColor.RED + "Начало игры через 1 секунду", Sound.CLICK);
+                        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                            everyPlayerMakeSound(Sound.CLICK);
+                            try
+                            {
+                                try {
+                                    String title = Config.readConfig("settings", "scoreboard", "started", "title");
+                                    List<String> messages = Config.readConfigStringList("settings", "scoreboard", "started", "lines");
+                                    scoreboardSet(title, messages);
+                                    timerStart();
+                                    scoreboardUpdate();
+                                } catch (Exception e) {
+                                    plugin.getLogger().info(e.getLocalizedMessage());
+                                }
+                                gameStatus0 = 1;
+                                murder = ""; detective = ""; innocents = ""; ghosts = "";
+                                List<Player> playerList = plugin.getServer().getWorld(plugin.getServer().getWorlds().get(0).getName()).getPlayers();
+                                int playerSize = playerList.size();
+                                startGoldSpawn();
+                                int murderRandom = (int) (Math.random() * playerSize); int detectiveRandom = (int) (Math.random() * playerSize); int a = 0;
+                                while (murderRandom == detectiveRandom)
+                                {
+                                    murderRandom = (int) (Math.random() * playerSize);
+                                    detectiveRandom = (int) (Math.random() * playerSize);
+                                }
+                                while (a != playerSize)
+                                {
+                                    if (a == murderRandom)
+                                    {
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
+                                        Material murderWeapon = Material.IRON_SWORD;
+                                        try
+                                        {
+                                            murderWeapon = Material.getMaterial(Config.readConfig(configKey, "murder_weapon").toUpperCase());
+                                        }
+                                        catch (Exception e)
+                                        {
+                                            plugin.getLogger().warning("Material not found!\n" + e.getMessage());
+                                        }
+                                        int murderSlot = Integer.parseInt(Config.readConfig(configKey, "murder_weapon_slot"));
+                                        playerList.get(a).getInventory().setItem(murderSlot, new ItemStack(murderWeapon));
+                                        murder = playerList.get(a).getName();
+                                    }
+                                    if (a == detectiveRandom)
+                                    {
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
+                                        int detectiveSlot = Integer.parseInt(Config.readConfig(configKey, "detective_weapon_slot"));
+                                        playerList.get(a).getInventory().setItem(10, new ItemStack(Item.getId(Item.getById(262))));
+                                        int t = 0;
+                                        while (t != 62)
+                                        {
+                                            playerList.get(a).getInventory().addItem(new ItemStack(Item.getId(Item.getById(262))));
+                                            t++;
+                                        }
+                                        playerList.get(a).getInventory().setItem(detectiveSlot, new ItemStack(Item.getId(Item.getById(261))));
+                                        detective = playerList.get(a).getName();
+                                    }
+                                    if (a != murderRandom && a != detectiveRandom)
+                                    {
+                                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clear " + playerList.get(a).getPlayer().getName());
+                                        innocents += playerList.get(a).getName() + ",";
+                                    }
+                                    String playerRole = getRoleString(playerList.get(a).getName());
+                                    String worldName = Config.readConfig("maps", "0", "world_name");
+                                    int playersInWorld = plugin.getServer().getWorld(worldName).getPlayers().size();
+                                    int maxPlayers = Integer.parseInt(Config.readConfig("maps", "0", "max_players"));
+                                    String murderRole = Config.readConfig(configKey, "roles", "murder");
+                                    String roleColor = Config.readConfig(configKey, "roles", playerRole + "_color");
+                                    String roleResult = Config.readConfig(configKey, "roles", playerRole);
+                                    String roleTitle = Config.readConfig(configKey, "role_title").replace("&", "§").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
+                                    String roleSubtitle = Config.readConfig(configKey, "roles", playerRole + "_subtitle").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
+                                    String roleWarning = Config.readConfig(configKey, "roles", playerRole + "_warning").replace("{murder_role}", murderRole).replace("{role}", roleResult).replace("{max_players}", String.valueOf(maxPlayers)).replace("{players_count}", String.valueOf(playersInWorld)).replace("{nick}", playerList.get(a).getName()).replace("{role_color}", roleColor);
+                                    playerList.get(a).sendTitle(roleTitle, roleSubtitle);
+                                    playerList.get(a).sendMessage(roleWarning);
+                                    a++;
+                                }
+                            }
+                            catch (Exception ignored) {}
+                        }, 20L);
+                    }, 20L);
+                }, 20L);
+            }, 20L);
+        }, 20L); // 20 ticks = 1 sec
     }
     public static void stopGame(Boolean innocentsWin) throws IOException, InvalidConfigurationException {
         gameStatus0 = 2;
@@ -203,6 +244,7 @@ public class MurderMysteryManager
             String winMurderMessage = Config.readConfig(configKey, "murder_win_message");
             plugin.getServer().broadcastMessage(winMurderMessage);
         }
+        plugin.getServer().shutdown();
     }
     public static int getRole(String nick)
     {
